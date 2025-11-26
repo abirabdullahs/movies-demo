@@ -24,21 +24,24 @@ export default function ProductsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map((p) => (
-          <article key={p.id} className="card card-compact bg-base-100 shadow hover:shadow-lg transition">
-            <figure className="h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
-              <img src={p.image || '/assets/headphones.jpg'} alt={p.title} className="object-cover w-full h-full" />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title">{p.title}</h2>
-              <p className="line-clamp-2 text-sm text-gray-600">{p.short}</p>
-              <div className="card-actions justify-between items-center mt-4">
-                <span className="font-semibold">{p.price}</span>
-                <Link href={`/products/${p.id}`} className="btn btn-sm btn-primary">Details</Link>
+        {filtered.map((p) => {
+          const productId = p.id || p._id;
+          return (
+            <article key={productId} className="card card-compact bg-base-100 shadow hover:shadow-lg transition">
+              <figure className="h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
+                <img src={p.image || '/assets/headphones.jpg'} alt={p.title} className="object-cover w-full h-full" />
+              </figure>
+              <div className="card-body">
+                <h2 className="card-title">{p.title}</h2>
+                <p className="line-clamp-2 text-sm text-gray-600">{p.short}</p>
+                <div className="card-actions justify-between items-center mt-4">
+                  <span className="font-semibold">{p.price}</span>
+                  <Link href={`/products/${productId}`} className="btn btn-sm btn-primary">Details</Link>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </main>
   );

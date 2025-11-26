@@ -8,6 +8,20 @@ export default function ProductDetails() {
   const { id } = useParams();
   const router = useRouter();
   const { getById } = useContext(ProductContext);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Show loading while params are being resolved
+  if (!mounted || !id) {
+    return (
+      <main className="max-w-4xl mx-auto p-6">
+        <div>Loading...</div>
+      </main>
+    );
+  }
 
   const product = getById(id);
   if (!product) {
