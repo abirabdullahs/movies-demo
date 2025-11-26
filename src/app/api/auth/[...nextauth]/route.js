@@ -13,7 +13,7 @@ const serverUrl = process.env.NEXTAUTH_API_URL || process.env.NEXT_PUBLIC_SERVER
 
 export const authOptions = {
   providers: [
-    CredentialsProvider({
+    ...(process.env.NEXTAUTH_SECRET ? [CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
@@ -34,7 +34,11 @@ export const authOptions = {
           return null;
         }
       },
-    }),
+    })] : []),
+    // Google provider is optional
+    ...(GoogleProvider && process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? [
+      GoogleProvider({ clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET })
+    ] : []),
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -48,15 +52,12 @@ export const authOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET || "dev-secret",
+  secret: process.env.NEXTAUTH_SECRET || "dev-secret-unsafe-only-for-dev",
+  pages: {
+    signIn: '/login',
+    error: '/login',
+  },
 };
-
-// Add Google provider if env vars are present
-if (GoogleProvider && process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  authOptions.providers.push(
-    GoogleProvider({ clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET })
-  );
-}
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
