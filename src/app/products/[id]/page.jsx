@@ -50,7 +50,11 @@ async function getProductData(id) {
 
 export default async function ProductDetailsPage({ params }) {
   const { id } = await params;
+
+  console.log(id);
   const product = await getProductData(id);
+
+  console.log(product);
 
   if (!product) {
     return (

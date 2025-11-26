@@ -17,7 +17,7 @@ const Login = () => {
             redirect: true,
             email: data.email,
             password: data.password,
-            callbackUrl: "/", // redirect after login
+            callbackUrl: "/", 
         });
     };
 
