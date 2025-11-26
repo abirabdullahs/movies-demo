@@ -16,7 +16,7 @@ const sampleProducts = [
 ];
 
 const ProductProvider = ({ children }) => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(sampleProducts); // Initialize with sample products immediately
   const auth = useContext(AuthContext);
   const user = auth?.user;
   const { data: session } = useSession();
