@@ -27,15 +27,18 @@ const ProductProvider = ({ children }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${server}/api/products`);
+        const res = await fetch(`${server}/api/products`, { signal: AbortSignal.timeout(5000) });
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
         const data = await res.json();
 
+        // Merge API results with sample products for fallback
         if (Array.isArray(data)) setProducts(data);
         else if (data && Array.isArray(data.products)) setProducts(data.products);
-        else setProducts(sampleProducts); // fallback
+        else setProducts(sampleProducts);
       } catch (err) {
-        console.error("Failed to fetch products:", err);
-        setProducts(sampleProducts); // fallback
+        console.warn("Failed to fetch products from API, using sample products:", err.message);
+        // Always use sample products as fallback to ensure details pages work
+        setProducts(sampleProducts);
       }
     };
     fetchProducts();
