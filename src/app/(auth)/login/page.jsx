@@ -12,16 +12,33 @@ const Login = () => {
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const onSubmit = async (data) => {
-        const res = await signIn("credentials", {
-            redirect: true,
-            email: data.email,
-            password: data.password,
-            callbackUrl: "/", 
-        });
+    const router = useRouter();
+    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+    const showToast = (message, type = 'success') => {
+        setToast({ show: true, message, type });
+        setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
     };
 
-    const router = useRouter();
+    const onSubmit = async (data) => {
+        try {
+            const res = await signIn("credentials", {
+                redirect: false,
+                email: data.email,
+                password: data.password,
+            });
+            if (res?.ok) {
+                showToast('Login successful', 'success');
+                router.push(res.url || '/');
+            } else {
+                console.error('Login failed', res);
+                showToast('Login failed', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast(err.message || 'Login error', 'error');
+        }
+    };
     const { googleSignIn } = useContext(AuthContext);
 
     const onGoogle = async () => {
@@ -33,9 +50,11 @@ const Login = () => {
                 email: fbUser.email,
                 name: fbUser.displayName,
             });
+            showToast('Google sign-in successful', 'success');
             router.push('/');
         } catch (err) {
             console.error(err);
+            showToast(err.message || 'Google sign-in failed', 'error');
         }
     };
 
@@ -69,6 +88,14 @@ const Login = () => {
                     {
                         loggedIn && <div className="text-red-500">You are Already Logged In</div>
                     }
+
+                    {toast.show && (
+                        <div className={`toast ${toast.type === 'success' ? 'toast-success' : 'toast-error'} mt-4`}>
+                            <div className="alert">
+                                <span>{toast.message}</span>
+                            </div>
+                        </div>
+                    )}
 
                 </fieldset>
             </form>
